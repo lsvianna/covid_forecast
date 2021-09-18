@@ -1,0 +1,73 @@
+<!doctype html>
+
+<head>
+
+	<title>Predição COVID-19</title>
+	
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css')  }}">
+	<link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css" integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
+
+</head>
+
+<h2>Predição COVID-19 em Santa Catarina</h2>
+<h3>Casos novos por dia</h3>
+
+<body class="main">
+
+	<div>
+		<form class="pure-form pure-form-stacked" method="POST" action="/">
+			Data de referência para predição:<br>
+			<input type="date" min="2020-06-01" max={{ today }} name="data" required>
+			<span style="font-size:10pt; color:gray">Selecione 2 ou 3 dias anteriores para evitar registros incompletos do banco de dados.</span><br><br>
+			Município:<br>
+			<select name="municipio">
+				{% for each in municipios %}
+					<option value="{{each}}">{{each}}</option>
+				{% endfor %}
+			</select><br>
+			<button type="submit" class="pure-button pure-button-primary" value="Submit">Submit</button>
+		</form>
+	</div>
+	
+	<br>
+	
+	{% if rmse %}	
+		<div>
+			<table class="pure-table">
+			
+				<thead>
+					<tr>
+						<th>Município</th>
+						<th>Média móvel: d = {{ data }}</th>
+						<th>Média móvel: d+14</th>
+						<th>Variação</th>
+						<th>Erro do modelo (RMSE)</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					<tr>
+						<th>{{ municipio }}</th>
+						<th>{{ media_antes }}</th>
+						<th>{{ media_depois }}</th>
+						{% if variacao > 0 %}
+							<th>+{{ variacao }}%</th>
+						{% else %}
+							<th>{{ variacao }}%</th>
+						{% endif %}
+						<th> {{ rmse }}</th>
+					</tr>
+				</tbody>
+
+			</table>
+		</div>
+        
+		<div>
+			<img src="static/predictions_city.jpg" height="600px">
+		</div>
+
+		<div>
+			<img src="static/incidence.jpg" height="500px">
+		</div>
+	{% endif %}
+</body>
